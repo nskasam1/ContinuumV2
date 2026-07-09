@@ -18,8 +18,8 @@ export function HighStakesToggle({ checked, onChange, label }: HighStakesToggleP
         }`}
       >
         <span
-          className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-transform duration-[250ms] ${
-            checked ? "translate-x-9" : "translate-x-1"
+          className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform duration-[250ms] ${
+            checked ? "translate-x-8" : "translate-x-0"
           }`}
         />
       </button>

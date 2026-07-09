@@ -184,6 +184,18 @@ All copy (source records, brief, transcript, summary text, thesis line, sign-off
 
 No automated test suite requested for this prototype (visual/interactive demo). Verification is manual: run `npm run dev`, walk the full interaction flow (synthesize → sign off → bridge → toggle both directions → reset), check responsive behavior at mobile width, and check `prefers-reduced-motion` fallback.
 
+## Addendum (2026-07-09): Step 3 closing card
+
+Originally step 3 ("Store & carry forward") only lit up in `StepIndicator` with no accompanying content, leaving the demo feeling like a dead end once a summary was generated. Adding a small closing card to give it a visual payoff:
+
+- New component `src/components/shared/ClosingCard.tsx`, no props — static content.
+- Rendered as its own top-level section in `App.tsx`, conditioned on `state.hasGeneratedOnce` (same flag that already activates step 3 — no new state needed), placed below the Communication Bridge section and above `ThesisStatement`.
+- Entrance: fade + slide-up (~0.3s), consistent with other section reveals; respects `prefers-reduced-motion` via the existing `usePrefersReducedMotion` hook (opacity-only fallback).
+- Visual treatment: `SectionHeading` (eyebrow "Capability 1 + 2", title "Carried Forward") above a single `rounded-lg border border-border bg-accent-dim p-5` card — reuses the existing accent-dim family (same as the AI-generated summary card) since this is a calm/settled confirmation state, not a new decision point. No button, no action.
+- Copy (verbatim):
+  - Label (mono, uppercase, `text-accent`): "Stored · available at next visit"
+  - Body: "This synthesized brief and after-visit summary are now attached to the patient's record — available at the next visit, without re-collecting from five systems again."
+
 ## Out of Scope
 
 - No backend, persistence, or real translation/synthesis logic.

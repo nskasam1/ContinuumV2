@@ -11,6 +11,7 @@ import { SummaryResult } from "./components/bridge/SummaryResult";
 import { SectionHeading } from "./components/shared/SectionHeading";
 import { ResetButton } from "./components/shared/ResetButton";
 import { ThesisStatement } from "./components/shared/ThesisStatement";
+import { ClosingCard } from "./components/shared/ClosingCard";
 import { languageBadges, highStakesPrompt, thesisStatement, stepLabels } from "./data/transcript";
 
 const SYNTHESIS_DELAY_MS = 700;
@@ -118,6 +119,8 @@ export default function App() {
           <SummaryResult bridgeStage={state.bridgeStage} highStakes={state.highStakes} />
         </section>
       )}
+
+      {state.hasGeneratedOnce && <ClosingCard />}
 
       <footer className="border-t border-border pt-8">
         <ThesisStatement text={thesisStatement} />

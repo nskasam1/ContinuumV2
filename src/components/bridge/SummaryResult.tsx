@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import type { BridgeStage } from "../../state/types";
 import { aiSummary, humanRoutedSummary } from "../../data/transcript";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 
 interface SummaryResultProps {
   bridgeStage: BridgeStage;
@@ -8,6 +9,8 @@ interface SummaryResultProps {
 }
 
 export function SummaryResult({ bridgeStage, highStakes }: SummaryResultProps) {
+  const reduceMotion = usePrefersReducedMotion();
+
   if (bridgeStage === "ready") return null;
 
   if (bridgeStage === "generating") {
@@ -20,21 +23,29 @@ export function SummaryResult({ bridgeStage, highStakes }: SummaryResultProps) {
     );
   }
 
+  const cardInitial = reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 };
+  const cardAnimate = reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 };
+  const cardExit = { opacity: 0, transition: { duration: 0.2 } };
+  const cardTransition = reduceMotion ? { duration: 0.2 } : { duration: 0.3, delay: 0.15 };
+  const sweepTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.35, delay: 0.15, ease: "easeOut" as const };
+
   return (
     <AnimatePresence mode="wait">
       {highStakes ? (
         <motion.div
           key="human"
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
-          transition={{ duration: 0.3, delay: 0.15 }}
+          initial={cardInitial}
+          animate={cardAnimate}
+          exit={cardExit}
+          transition={cardTransition}
           className="relative overflow-hidden rounded-lg bg-red-bg p-5 pl-6"
         >
           <motion.span
-            initial={{ scaleY: 0 }}
+            initial={{ scaleY: reduceMotion ? 1 : 0 }}
             animate={{ scaleY: 1 }}
-            transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}
+            transition={sweepTransition}
             style={{ originY: 0 }}
             className="absolute left-0 top-0 h-full w-1 bg-red"
           />
@@ -46,16 +57,16 @@ export function SummaryResult({ bridgeStage, highStakes }: SummaryResultProps) {
       ) : (
         <motion.div
           key="ai"
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
-          transition={{ duration: 0.3, delay: 0.15 }}
+          initial={cardInitial}
+          animate={cardAnimate}
+          exit={cardExit}
+          transition={cardTransition}
           className="relative overflow-hidden rounded-lg bg-accent-dim p-5 pl-6"
         >
           <motion.span
-            initial={{ scaleY: 0 }}
+            initial={{ scaleY: reduceMotion ? 1 : 0 }}
             animate={{ scaleY: 1 }}
-            transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}
+            transition={sweepTransition}
             style={{ originY: 0 }}
             className="absolute left-0 top-0 h-full w-1 bg-accent"
           />

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { medications, flags, gaps, signoffLine } from "../../data/briefContent";
 import type { Stage } from "../../state/types";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { MedicationList } from "./MedicationList";
 import { FlagItem } from "./FlagItem";
 import { GapsList } from "./GapsList";
@@ -14,6 +15,8 @@ interface BriefPanelProps {
 }
 
 export function BriefPanel({ stage, signoffChecked, onToggleSignoff, onConfirmSignoff }: BriefPanelProps) {
+  const reduceMotion = usePrefersReducedMotion();
+
   if (stage === "idle") {
     return (
       <div className="flex min-h-[240px] items-center justify-center rounded-lg border border-dashed border-border p-8 text-center text-sm text-ink-soft">
@@ -35,16 +38,25 @@ export function BriefPanel({ stage, signoffChecked, onToggleSignoff, onConfirmSi
     );
   }
 
+  const sectionInitial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 };
+  const sectionAnimate = reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 };
+  const baseDuration = reduceMotion ? 0.15 : 0.3;
+  const delayFor = (delay: number) => (reduceMotion ? 0 : delay);
+
   return (
     <div className="rounded-lg border border-border bg-surface p-6">
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+      <motion.div
+        initial={sectionInitial}
+        animate={sectionAnimate}
+        transition={{ duration: baseDuration }}
+      >
         <MedicationList medications={medications} />
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
+        initial={sectionInitial}
+        animate={sectionAnimate}
+        transition={{ duration: baseDuration, delay: delayFor(0.15) }}
         className="mt-6"
       >
         <h3 className="mb-2 text-sm font-semibold text-ink">Flagged for review</h3>
@@ -56,9 +68,9 @@ export function BriefPanel({ stage, signoffChecked, onToggleSignoff, onConfirmSi
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
+        initial={sectionInitial}
+        animate={sectionAnimate}
+        transition={{ duration: baseDuration, delay: delayFor(0.3) }}
         className="mt-6"
       >
         <GapsList gaps={gaps} />
@@ -67,10 +79,10 @@ export function BriefPanel({ stage, signoffChecked, onToggleSignoff, onConfirmSi
       <AnimatePresence>
         {stage === "synthesized" && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: baseDuration, delay: delayFor(0.5) }}
             className="mt-6"
           >
             <SignoffBar

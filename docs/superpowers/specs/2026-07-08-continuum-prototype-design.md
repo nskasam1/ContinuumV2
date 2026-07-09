@@ -196,6 +196,18 @@ Originally step 3 ("Store & carry forward") only lit up in `StepIndicator` with 
   - Label (mono, uppercase, `text-accent`): "Stored · available at next visit"
   - Body: "This synthesized brief and after-visit summary are now attached to the patient's record — available at the next visit, without re-collecting from five systems again."
 
+## Addendum (2026-07-09): Plain-language guidance for non-medical viewers
+
+The target audience (hedge fund case-study reviewers) isn't clinical, so medical jargon and system names (EPIC, Cerner, Quest, "QT prolongation," "sumatriptan") don't land without translation. Adding always-visible plain-language captions rather than hover tooltips or a guided-tour overlay, so nothing requires discovery on a one-time viewing, and it stays in the restrained visual style rather than a SaaS-onboarding tour.
+
+- **Section intro line** above the 5 source cards (Capability 1): explains these are 5 real, disconnected records for the same patient.
+- **Per-card plain-English caption** in `RecordCard`: a new sans-serif line under the existing mono system/date row, naming what kind of source it is in plain English (e.g. "Primary care doctor's electronic record"). The raw mono note text is untouched — this reinforces the existing raw-mono-vs-synthesized-sans type contrast rather than fighting it. New field `caption` added to `SourceRecord` in `src/data/sourceRecords.ts`.
+- **Medication purpose** in `MedicationList`: a small muted line naming what each drug is for (e.g. "blood pressure medication"). New field `purpose` added to `Medication` in `src/data/briefContent.ts`.
+- **Flag copy edits**: inline parenthetical glosses added directly into the existing flag/gap text in `src/data/briefContent.ts` (content-only change, no new UI) — e.g. "sumatriptan (migraine medication)," "borderline QT prolongation (an early warning sign for dangerous heart-rhythm changes...)," "EKG (heart-rhythm test)."
+- **Section intro line** above the transcript in Capability 2: explains this is a live visit with real-time translation on both sides.
+
+New shared component `src/components/shared/SectionIntro.tsx` (props: `text: string`) renders the two section-intro lines — small sans-serif paragraph, `text-ink-soft`, placed between `SectionHeading` and the section content.
+
 ## Out of Scope
 
 - No backend, persistence, or real translation/synthesis logic.

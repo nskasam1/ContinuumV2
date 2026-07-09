@@ -22,6 +22,9 @@ export const transcriptEntries: TranscriptEntry[] = [
   },
 ];
 
+export const transcriptIntro =
+  "This is a live visit with a patient who has limited English proficiency. Each side sees a real-time translation of the other.";
+
 export const languageBadges = {
   preferred: "Preferred language: Spanish",
   lep: "Limited English proficiency: flagged",

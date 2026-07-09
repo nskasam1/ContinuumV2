@@ -34,13 +34,14 @@ export function RecordCard({ record, index }: RecordCardProps) {
       className="rounded-lg border-l-4 bg-surface p-4 shadow-sm"
       style={{ borderLeftColor: `var(${record.accentVar})` }}
     >
-      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-2 font-mono text-xs uppercase tracking-wide text-ink-soft">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 font-mono text-xs uppercase tracking-wide text-ink-soft">
         <span>
           {record.system}
           {record.facility ? ` · ${record.facility}` : ""}
         </span>
         <span>{record.date}</span>
       </div>
+      <p className="mb-2 text-xs italic text-ink-soft">{record.caption}</p>
       <p className="font-mono text-sm leading-relaxed text-ink">{record.note}</p>
     </motion.div>
   );

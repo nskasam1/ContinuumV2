@@ -12,6 +12,7 @@ export function MedicationList({ medications }: MedicationListProps) {
         {medications.map((med) => (
           <li key={med.name} className="flex flex-wrap items-baseline gap-x-2 text-sm text-ink">
             <span className="font-medium">{med.name}</span>
+            <span className="text-xs italic text-ink-soft">{med.purpose}</span>
             <span className="font-mono text-xs text-ink-soft">{med.source}</span>
           </li>
         ))}

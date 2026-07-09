@@ -9,10 +9,12 @@ import { TranscriptPanel } from "./components/bridge/TranscriptPanel";
 import { HighStakesToggle } from "./components/bridge/HighStakesToggle";
 import { SummaryResult } from "./components/bridge/SummaryResult";
 import { SectionHeading } from "./components/shared/SectionHeading";
+import { SectionIntro } from "./components/shared/SectionIntro";
 import { ResetButton } from "./components/shared/ResetButton";
 import { ThesisStatement } from "./components/shared/ThesisStatement";
 import { ClosingCard } from "./components/shared/ClosingCard";
-import { languageBadges, highStakesPrompt, thesisStatement, stepLabels } from "./data/transcript";
+import { languageBadges, highStakesPrompt, thesisStatement, stepLabels, transcriptIntro } from "./data/transcript";
+import { sourceRecordsIntro } from "./data/sourceRecords";
 
 const SYNTHESIS_DELAY_MS = 700;
 const GENERATION_DELAY_MS = 600;
@@ -67,6 +69,7 @@ export default function App() {
 
       <section className="mb-16">
         <SectionHeading eyebrow="Capability 1" title="Clinical Synthesis Brief" />
+        {preSynthesis && <SectionIntro text={sourceRecordsIntro} />}
         <div className={preSynthesis ? "grid grid-cols-1 gap-8 lg:grid-cols-2" : "grid grid-cols-1"}>
           {preSynthesis && (
             <div>
@@ -92,6 +95,7 @@ export default function App() {
       {state.stage === "signedOff" && (
         <section ref={bridgeRef} className="mb-16 scroll-mt-8">
           <SectionHeading eyebrow="Capability 2" title="Communication Bridge" />
+          <SectionIntro text={transcriptIntro} />
           <div className="mb-4">
             <LanguageBadges preferred={languageBadges.preferred} lep={languageBadges.lep} />
           </div>

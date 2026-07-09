@@ -1,6 +1,7 @@
 export interface Medication {
   name: string;
   source: string;
+  purpose: string;
 }
 
 export interface Flag {
@@ -9,14 +10,14 @@ export interface Flag {
 }
 
 export const medications: Medication[] = [
-  { name: "Lisinopril 10mg daily", source: "EPIC · PCP" },
-  { name: "Sumatriptan 50mg as-needed", source: "RX · Walgreens" },
+  { name: "Lisinopril 10mg daily", source: "EPIC · PCP", purpose: "blood pressure medication" },
+  { name: "Sumatriptan 50mg as-needed", source: "RX · Walgreens", purpose: "migraine medication" },
 ];
 
 export const flags: Flag[] = [
   {
     severity: "critical",
-    text: "Interaction risk — sumatriptan + borderline QT prolongation (Cardiology, May 2) — no cross-check occurred at time of prescribing",
+    text: "Interaction risk — sumatriptan (migraine medication) + borderline QT prolongation (an early warning sign for dangerous heart-rhythm changes, Cardiology, May 2) — no cross-check occurred at time of prescribing",
   },
   {
     severity: "moderate",
@@ -26,7 +27,7 @@ export const flags: Flag[] = [
 
 export const gaps: string[] = [
   "ER-recommended cardiology follow-up (Apr 29) never scheduled",
-  "Last EKG on file is 6 weeks old",
+  "Last EKG (heart-rhythm test) on file is 6 weeks old",
 ];
 
 export const signoffLine =

@@ -56,6 +56,9 @@ export default function App() {
           <h1 className="mt-1 text-2xl font-semibold text-ink sm:text-3xl">
             Clinical Synthesis &amp; Communication Bridge
           </h1>
+          <p className="mt-2 font-mono text-xs text-ink-soft">
+            Simulation — Nikhil Kasam Case Study Prompt 2
+          </p>
         </div>
         <ResetButton onClick={() => dispatch({ type: "RESET" })} />
       </header>

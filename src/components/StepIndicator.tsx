@@ -25,7 +25,7 @@ export function StepIndicator({ labels, currentIndex, completedCount }: StepIndi
             </span>
             <span
               className={`text-sm font-medium ${
-                active ? "text-ink" : done ? "text-ink-soft" : "text-ink-soft/60"
+                active ? "text-ink" : done ? "text-ink-soft" : "text-[rgba(61,78,96,0.6)]"
               }`}
             >
               {label}

@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { flowReducer, initialFlowState } from "./state/flowReducer";
 import { StepIndicator } from "./components/StepIndicator";
 import { SourceRecordGrid } from "./components/synthesis/SourceRecordGrid";
@@ -13,6 +14,7 @@ import { SectionIntro } from "./components/shared/SectionIntro";
 import { ResetButton } from "./components/shared/ResetButton";
 import { ThesisStatement } from "./components/shared/ThesisStatement";
 import { ClosingCard } from "./components/shared/ClosingCard";
+import { WelcomeOverlay } from "./components/shared/WelcomeOverlay";
 import { GuidedTour } from "./components/tour/GuidedTour";
 import { languageBadges, highStakesPrompt, thesisStatement, stepLabels, transcriptIntro } from "./data/transcript";
 import { sourceRecordsIntro } from "./data/sourceRecords";
@@ -29,6 +31,7 @@ function getStepStatus(stage: string, hasGeneratedOnce: boolean) {
 export default function App() {
   const [state, dispatch] = useReducer(flowReducer, initialFlowState);
   const [tourActive, setTourActive] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const bridgeRef = useRef<HTMLDivElement>(null);
   const prevStage = useRef(state.stage);
 
@@ -57,13 +60,14 @@ export default function App() {
   function handleTakeTour() {
     dispatch({ type: "RESET" });
     setTourActive(true);
+    setShowWelcome(false);
   }
 
   const { completedCount, currentIndex } = getStepStatus(state.stage, state.hasGeneratedOnce);
   const preSynthesis = state.stage === "idle" || state.stage === "synthesizing";
 
   return (
-    <div className={`mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 ${tourActive ? "pb-36" : ""}`}>
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-accent">Continuum</p>
@@ -161,6 +165,12 @@ export default function App() {
       </footer>
 
       <GuidedTour active={tourActive} flowState={state} onExit={() => setTourActive(false)} />
+
+      <AnimatePresence>
+        {showWelcome && (
+          <WelcomeOverlay onStartTour={handleTakeTour} onDismiss={() => setShowWelcome(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

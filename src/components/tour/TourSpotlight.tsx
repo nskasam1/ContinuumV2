@@ -1,56 +1,13 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import type { TourRect } from "./types";
 
 interface TourSpotlightProps {
-  targetSelector: string | undefined;
+  rect: TourRect | null;
 }
 
-interface Rect {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
-
-const PADDING = 8;
-
-export function TourSpotlight({ targetSelector }: TourSpotlightProps) {
+export function TourSpotlight({ rect }: TourSpotlightProps) {
   const reduceMotion = usePrefersReducedMotion();
-  const [rect, setRect] = useState<Rect | null>(null);
-
-  useEffect(() => {
-    if (!targetSelector) {
-      setRect(null);
-      return;
-    }
-
-    function measure() {
-      const el = document.querySelector(`[data-tour="${targetSelector}"]`);
-      if (!el) {
-        setRect(null);
-        return;
-      }
-      const box = el.getBoundingClientRect();
-      setRect({
-        top: box.top - PADDING,
-        left: box.left - PADDING,
-        width: box.width + PADDING * 2,
-        height: box.height + PADDING * 2,
-      });
-    }
-
-    measure();
-    const raf = requestAnimationFrame(measure);
-
-    window.addEventListener("scroll", measure, true);
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", measure, true);
-      window.removeEventListener("resize", measure);
-    };
-  }, [targetSelector]);
 
   if (!rect) return null;
 

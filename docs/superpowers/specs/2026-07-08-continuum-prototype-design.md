@@ -242,6 +242,16 @@ The always-visible captions (previous addendum) help but don't actively walk a n
 
 Full body copy for each step lives directly in `src/data/tourSteps.ts` (new file), not duplicated here.
 
+## Addendum (2026-07-10): Tour redesign — entry point, panel placement, tone
+
+Three follow-up fixes to the guided tour:
+
+- **Entry point:** a full-screen `WelcomeOverlay` now appears on first load (before any other content is interactive) with a one-line pitch and two choices: "Take the tour" or "Explore on my own." This replaces relying on the header button as the only discovery path — the header button stays as a secondary entry point for anyone who dismissed the welcome screen and changes their mind later.
+- **Panel placement:** `TourPanel` no longer docks to the bottom of the viewport. It now floats near the spotlighted element (`GuidedTour` measures the target rect once and passes it to both `TourSpotlight` and `TourPanel`; the panel positions itself below the target if there's room, above otherwise, horizontally centered and clamped to viewport edges). This keeps the explanation next to what it's explaining instead of requiring a glance to the bottom of the screen. Step 1 (the old "Welcome to Continuum" step, now redundant with the welcome overlay) was removed, so the tour is 12 steps instead of 13.
+- **Copy tone:** all step titles/body copy rewritten to be more conversational (contractions, direct address, shorter sentences) — see `src/data/tourSteps.ts` for current text.
+
+**Bug found and fixed during this pass:** `bg-ink/60` (welcome overlay backdrop) and `text-ink-soft/60` (step indicator inactive labels) were silently not applying their opacity — Tailwind's color-opacity modifier (`/NN`) requires the underlying color to be defined in an RGB-tuple format compatible with `rgb(var(--x) / <alpha>)`, but this project's CSS custom properties are plain hex strings, so the modifier had no effect. Fixed by using explicit `rgba(...)` arbitrary values (`bg-[rgba(11,30,51,0.6)]`, `text-[rgba(61,78,96,0.6)]`) instead of the opacity-modifier syntax. Any future use of `<color>/<NN>` on one of this project's custom Tailwind color tokens will have the same silent failure — use an arbitrary `rgba()` value instead.
+
 ## Out of Scope
 
 - No backend, persistence, or real translation/synthesis logic.

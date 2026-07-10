@@ -4,11 +4,27 @@ import { tourSteps, type TourGate } from "../../data/tourSteps";
 import type { FlowState } from "../../state/types";
 import { TourSpotlight } from "./TourSpotlight";
 import { TourPanel } from "./TourPanel";
+import type { TourRect } from "./types";
 
 interface GuidedTourProps {
   active: boolean;
   flowState: FlowState;
   onExit: () => void;
+}
+
+const RECT_PADDING = 8;
+
+function measureTarget(selector: string | undefined): TourRect | null {
+  if (!selector) return null;
+  const el = document.querySelector(`[data-tour="${selector}"]`);
+  if (!el) return null;
+  const box = el.getBoundingClientRect();
+  return {
+    top: box.top - RECT_PADDING,
+    left: box.left - RECT_PADDING,
+    width: box.width + RECT_PADDING * 2,
+    height: box.height + RECT_PADDING * 2,
+  };
 }
 
 function isGateSatisfied(gate: TourGate, state: FlowState): boolean {
@@ -30,6 +46,7 @@ function isGateSatisfied(gate: TourGate, state: FlowState): boolean {
 
 export function GuidedTour({ active, flowState, onExit }: GuidedTourProps) {
   const [stepIndex, setStepIndex] = useState(0);
+  const [targetRect, setTargetRect] = useState<TourRect | null>(null);
 
   useEffect(() => {
     if (active) setStepIndex(0);
@@ -52,6 +69,27 @@ export function GuidedTour({ active, flowState, onExit }: GuidedTourProps) {
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [active, stepIndex, step.target]);
 
+  useEffect(() => {
+    if (!active) {
+      setTargetRect(null);
+      return;
+    }
+
+    function update() {
+      setTargetRect(measureTarget(step.target));
+    }
+
+    update();
+    const raf = requestAnimationFrame(update);
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [active, stepIndex, step.target]);
+
   if (!active) return null;
 
   function handleNext() {
@@ -64,7 +102,7 @@ export function GuidedTour({ active, flowState, onExit }: GuidedTourProps) {
 
   return (
     <>
-      <TourSpotlight targetSelector={step.target} />
+      <TourSpotlight rect={targetRect} />
       <AnimatePresence mode="wait">
         <TourPanel
           key={stepIndex}
@@ -73,6 +111,7 @@ export function GuidedTour({ active, flowState, onExit }: GuidedTourProps) {
           totalSteps={tourSteps.length}
           waitingForAction={waitingForAction}
           isLastStep={isLastStep}
+          targetRect={targetRect}
           onNext={handleNext}
           onSkip={onExit}
         />

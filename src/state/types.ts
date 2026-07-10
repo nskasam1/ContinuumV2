@@ -8,6 +8,7 @@ export interface FlowState {
   bridgeStage: BridgeStage;
   highStakes: boolean;
   hasGeneratedOnce: boolean;
+  generationCount: number;
 }
 
 export type FlowAction =

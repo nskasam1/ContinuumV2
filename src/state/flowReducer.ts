@@ -6,6 +6,7 @@ export const initialFlowState: FlowState = {
   bridgeStage: "ready",
   highStakes: false,
   hasGeneratedOnce: false,
+  generationCount: 0,
 };
 
 export function flowReducer(state: FlowState, action: FlowAction): FlowState {
@@ -23,7 +24,12 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
     case "GENERATE_SUMMARY_START":
       return { ...state, bridgeStage: "generating" };
     case "GENERATE_SUMMARY_COMPLETE":
-      return { ...state, bridgeStage: "generated", hasGeneratedOnce: true };
+      return {
+        ...state,
+        bridgeStage: "generated",
+        hasGeneratedOnce: true,
+        generationCount: state.generationCount + 1,
+      };
     case "RESET":
       return initialFlowState;
     default:

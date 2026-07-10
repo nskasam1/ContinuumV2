@@ -44,7 +44,7 @@ export function BriefPanel({ stage, signoffChecked, onToggleSignoff, onConfirmSi
   const delayFor = (delay: number) => (reduceMotion ? 0 : delay);
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-6">
+    <div className="rounded-lg border border-border bg-surface p-6" data-tour="brief-panel">
       <motion.div
         initial={sectionInitial}
         animate={sectionAnimate}

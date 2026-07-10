@@ -11,6 +11,7 @@ export function ClosingCard() {
       animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       transition={{ duration: reduceMotion ? 0.15 : 0.3 }}
       className="mb-16"
+      data-tour="closing-card"
     >
       <SectionHeading eyebrow="Capability 1 + 2" title="Carried Forward" />
       <div className="rounded-lg border border-border bg-accent-dim p-5">

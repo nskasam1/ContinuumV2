@@ -7,7 +7,7 @@ interface SignoffBarProps {
 
 export function SignoffBar({ line, checked, onToggle, onConfirm }: SignoffBarProps) {
   return (
-    <div className="rounded-md border border-border bg-bg p-4">
+    <div className="rounded-md border border-border bg-bg p-4" data-tour="signoff-bar">
       <label className="flex cursor-pointer items-start gap-3 text-sm text-ink">
         <input
           type="checkbox"

@@ -6,7 +6,10 @@ interface HighStakesToggleProps {
 
 export function HighStakesToggle({ checked, onChange, label }: HighStakesToggleProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between"
+      data-tour="high-stakes-toggle"
+    >
       <span className="text-sm font-medium text-ink">{label}</span>
       <button
         type="button"

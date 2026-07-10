@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { flowReducer, initialFlowState } from "./state/flowReducer";
 import { StepIndicator } from "./components/StepIndicator";
 import { SourceRecordGrid } from "./components/synthesis/SourceRecordGrid";
@@ -13,6 +13,7 @@ import { SectionIntro } from "./components/shared/SectionIntro";
 import { ResetButton } from "./components/shared/ResetButton";
 import { ThesisStatement } from "./components/shared/ThesisStatement";
 import { ClosingCard } from "./components/shared/ClosingCard";
+import { GuidedTour } from "./components/tour/GuidedTour";
 import { languageBadges, highStakesPrompt, thesisStatement, stepLabels, transcriptIntro } from "./data/transcript";
 import { sourceRecordsIntro } from "./data/sourceRecords";
 
@@ -27,6 +28,7 @@ function getStepStatus(stage: string, hasGeneratedOnce: boolean) {
 
 export default function App() {
   const [state, dispatch] = useReducer(flowReducer, initialFlowState);
+  const [tourActive, setTourActive] = useState(false);
   const bridgeRef = useRef<HTMLDivElement>(null);
   const prevStage = useRef(state.stage);
 
@@ -47,11 +49,21 @@ export default function App() {
     setTimeout(() => dispatch({ type: "GENERATE_SUMMARY_COMPLETE" }), GENERATION_DELAY_MS);
   }
 
+  function handleReset() {
+    dispatch({ type: "RESET" });
+    setTourActive(false);
+  }
+
+  function handleTakeTour() {
+    dispatch({ type: "RESET" });
+    setTourActive(true);
+  }
+
   const { completedCount, currentIndex } = getStepStatus(state.stage, state.hasGeneratedOnce);
   const preSynthesis = state.stage === "idle" || state.stage === "synthesizing";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className={`mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 ${tourActive ? "pb-36" : ""}`}>
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-accent">Continuum</p>
@@ -62,7 +74,16 @@ export default function App() {
             Simulation — Nikhil Kasam Case Study Prompt 2
           </p>
         </div>
-        <ResetButton onClick={() => dispatch({ type: "RESET" })} />
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={handleTakeTour}
+            className="rounded-md border border-accent px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent-dim"
+          >
+            Take the tour
+          </button>
+          <ResetButton onClick={handleReset} />
+        </div>
       </header>
 
       <StepIndicator labels={stepLabels} currentIndex={currentIndex} completedCount={completedCount} />
@@ -73,8 +94,10 @@ export default function App() {
         <div className={preSynthesis ? "grid grid-cols-1 gap-8 lg:grid-cols-2" : "grid grid-cols-1"}>
           {preSynthesis && (
             <div>
-              <SourceRecordGrid visible={state.stage === "idle"} />
-              <div className="mt-4">
+              <div data-tour="source-cards">
+                <SourceRecordGrid visible={state.stage === "idle"} />
+              </div>
+              <div className="mt-4" data-tour="synthesize-button">
                 <SynthesisButton
                   onClick={handleSynthesize}
                   disabled={state.stage !== "idle"}
@@ -96,11 +119,13 @@ export default function App() {
         <section ref={bridgeRef} className="mb-16 scroll-mt-8">
           <SectionHeading eyebrow="Capability 2" title="Communication Bridge" />
           <SectionIntro text={transcriptIntro} />
-          <div className="mb-4">
-            <LanguageBadges preferred={languageBadges.preferred} lep={languageBadges.lep} />
-          </div>
-          <div className="mb-6">
-            <TranscriptPanel />
+          <div data-tour="bridge-intro">
+            <div className="mb-4">
+              <LanguageBadges preferred={languageBadges.preferred} lep={languageBadges.lep} />
+            </div>
+            <div className="mb-6">
+              <TranscriptPanel />
+            </div>
           </div>
           <div className="mb-6">
             <HighStakesToggle
@@ -109,7 +134,7 @@ export default function App() {
               label={highStakesPrompt}
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-6" data-tour="generate-button">
             <button
               type="button"
               onClick={handleGenerate}
@@ -123,7 +148,9 @@ export default function App() {
                   : "Generate after-visit summary"}
             </button>
           </div>
-          <SummaryResult bridgeStage={state.bridgeStage} highStakes={state.highStakes} />
+          <div data-tour="summary-result">
+            <SummaryResult bridgeStage={state.bridgeStage} highStakes={state.highStakes} />
+          </div>
         </section>
       )}
 
@@ -132,6 +159,8 @@ export default function App() {
       <footer className="border-t border-border pt-8">
         <ThesisStatement text={thesisStatement} />
       </footer>
+
+      <GuidedTour active={tourActive} flowState={state} onExit={() => setTourActive(false)} />
     </div>
   );
 }

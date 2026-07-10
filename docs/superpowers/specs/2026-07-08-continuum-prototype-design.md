@@ -208,6 +208,40 @@ The target audience (hedge fund case-study reviewers) isn't clinical, so medical
 
 New shared component `src/components/shared/SectionIntro.tsx` (props: `text: string`) renders the two section-intro lines — small sans-serif paragraph, `text-ink-soft`, placed between `SectionHeading` and the section content.
 
+## Addendum (2026-07-10): Guided tour
+
+The always-visible captions (previous addendum) help but don't actively walk a non-medical viewer through *why* each moment matters. Adding an opt-in, step-by-step coach-mark tour on top of them.
+
+**Trigger:** "Take the tour" button next to `ResetButton` in the header. Clicking it dispatches `RESET` first, then starts the tour at step 1 — guarantees a deterministic walkthrough regardless of prior exploration.
+
+**Mechanism:**
+- A bottom-docked fixed panel (`TourPanel`) spans the viewport width: step counter ("Step N of 13"), title, body copy, and either a "Next" button or — for action-gated steps — a hint like "Click the highlighted element to continue" with no button; the tour auto-advances when the real state change happens. Always includes a "Skip tour" control. No "Back" button — app state only moves forward, so back-stepping through action-gated steps would desync from reality.
+- A teal spotlight ring (`TourSpotlight`) highlights the current step's target element, computed via `getBoundingClientRect()` on a `document.querySelector('[data-tour="<key>"]')` lookup, recalculated on step change, scroll, and resize. The target is scrolled into view (`scrollIntoView({behavior, block: "center"})`) on each step change.
+- The real page underneath stays fully interactive at all times — the tour never blocks clicks, it only highlights and narrates.
+- Respects `prefers-reduced-motion` via the existing hook (opacity-only transitions, no ring pulse).
+- If the user clicks the real `ResetButton` while the tour is active, the tour exits (avoids a stale spotlight target pointing at now-reset UI).
+
+**State:** New `GuidedTour` component owns `stepIndex` locally; receives `active`, `flowState`, `onExit` as props from `App.tsx`. `flowReducer`/`FlowState` gains one new field, `generationCount: number` (incremented on every `GENERATE_SUMMARY_COMPLETE`), so the tour can distinguish "generated once" from "regenerated" without fragile heuristics.
+
+**Targets:** existing components/wrappers get a `data-tour="<key>"` attribute (plain HTML attribute, no prop threading needed): `source-cards`, `synthesize-button`, `brief-panel`, `signoff-bar`, `bridge-intro`, `high-stakes-toggle`, `generate-button`, `summary-result`, `closing-card`.
+
+**Steps** (title — target — gate condition on `FlowState`):
+1. "Welcome to Continuum" — no target — no gate.
+2. "Five disconnected records" — `source-cards` — no gate.
+3. "Collapse them into one brief" — `synthesize-button` — gate: `stage !== "idle" && stage !== "synthesizing"`.
+4. "The synthesized brief" — `brief-panel` — no gate.
+5. "The first human checkpoint" — `signoff-bar` — gate: `stage === "signedOff"`.
+6. "A language gap, live" — `bridge-intro` — no gate.
+7. "The second human checkpoint" — `high-stakes-toggle` — no gate.
+8. "Generate the after-visit summary" — `generate-button` — gate: `generationCount >= 1`.
+9. "Always labeled, always confirmable" — `summary-result` — no gate.
+10. "Now flip it" — `high-stakes-toggle` — gate: `generationCount >= 2`.
+11. "The hard stop" — `summary-result` — no gate.
+12. "Carried forward" — `closing-card` — no gate.
+13. "That's the simulation" — no target — "Finish" button closes the tour.
+
+Full body copy for each step lives directly in `src/data/tourSteps.ts` (new file), not duplicated here.
+
 ## Out of Scope
 
 - No backend, persistence, or real translation/synthesis logic.
